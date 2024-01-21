@@ -13,6 +13,9 @@ let index = 0
 
 for (let wallet of all_wallets) {
     ++index
+    if (wallet.private_key.includes('0x')) {
+        wallet.private_key = wallet.private_key.replace('0x', '') // Замена 0x на пустое значение
+    }
     await signGeneration(wallet.private_key)
     if (global_ms != 0) {
         console.log(`Waiting for delay: ${global_ms}`)
@@ -25,17 +28,22 @@ async function delay(ms) {
 }
 
 async function signGeneration(private_key) {
-    const wallet = new ethers.Wallet(private_key)
-    const wallet_address = wallet.address
+    try {
+        const wallet = new ethers.Wallet(private_key)
+        const wallet_address = wallet.address
 
-    console.log(`Progress ${index} of ${all_wallets.length} | Address: ${wallet_address}`)
+        console.log(`Progress ${index} of ${all_wallets.length} | Address: ${wallet_address}`)
 
-    const message = `You are claiming the Frame Chapter One Airdrop with the following address: ${wallet_address.toLowerCase()}`
+        const message = `You are claiming the Frame Chapter One Airdrop with the following address: ${wallet_address.toLowerCase()}`
 
-    const messageBytes = ethers.toUtf8Bytes(message);
+        const messageBytes = ethers.toUtf8Bytes(message);
 
-    const signature = await wallet.signMessage(messageBytes)
-    await getDataFromFrame(signature, wallet_address)
+        const signature = await wallet.signMessage(messageBytes)
+        await getDataFromFrame(signature, wallet_address)
+    } catch (error) {
+        console.log(`Probably invalid private key in line ${index + 1}`)
+        // console.log(error)
+    }
 }
 
 async function errorHandler(error) {
@@ -112,5 +120,5 @@ const csvWriter = createObjectCsvWriter({
   });
   
   csvWriter.writeRecords(data_to_save)
-    .then(() => console.log(`Готово! Результат - ${filename_csv}`))
+    .then(() => console.log(`Done! Result - ${filename_csv}`))
     .catch((error) => console.error('Ошибка записи в CSV:', error));
