@@ -1,4 +1,6 @@
 # Install node js and pnpm first
+https://nodejs.org/en LTS
+https://pnpm.io/installation
 1. pnpm i
 2. Add private keys to wallets.csv line by line without 0x do not touch first line "private_key"
 3. To check all wallets you need to run "node src/main.js"
