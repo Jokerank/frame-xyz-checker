@@ -10,6 +10,10 @@ for (let file of output_find) {
     }
 }
 
+if (show_files_to_user.length == 0) {
+    throw 'You need to run src/main.js first, output not found!'
+}
+
 console.log('Choose file, just put the number you want:')
 
 for (let i = 0; i < show_files_to_user.length; i++) {
